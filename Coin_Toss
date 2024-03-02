@@ -1,0 +1,23 @@
+#sets up
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# function cointoss is defined which allows the probability to be taken
+def coinToss(p):
+    prob = np.random.binomial(1,p) 
+    return prob 
+
+#probabilty value is set
+probability = 0.5
+samplespace =["Heads", "Tails"]
+
+#array which allows how many output ot be displayed
+#10 trials
+for i in range (10):
+    result = coinToss(probability)
+    print (samplespace [result])
+#1000 trials
+for i in range (1000):
+    result = coinToss(probability)
+    print (samplespace [result])
