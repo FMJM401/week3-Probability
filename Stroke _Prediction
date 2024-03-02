@@ -1,0 +1,136 @@
+#set up
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
+
+#reading csv file
+heart = pd.read_csv('healthcare-dataset-stroke-data.csv')
+heart
+
+from sklearn.preprocessing import LabelEncoder
+label_encoder = LabelEncoder()
+
+
+def clean_data(df):
+    df = df.drop('id', axis = 1)
+    
+    df = df.dropna(axis = 0)
+    
+    df['gender'] = label_encoder.fit_transform(df['gender'])
+    df['ever_married'] = label_encoder.fit_transform(df['ever_married'])
+    df['work_type'] = label_encoder.fit_transform(df['work_type'])
+    df['Residence_type'] = label_encoder.fit_transform(df['Residence_type'])
+    df['smoking_status'] = label_encoder.fit_transform(df['smoking_status'])
+    
+    return df
+data_clean = clean_data(heart)
+data_clean.info()
+
+plt.figure(figsize = (4,4))
+sns.countplot(x = 'stroke', data = data_clean, palette = 'viridis')
+plt.show()
+
+##Data Visualization and Feature Selection
+label_encoder= LabelEncoder()
+scaler= StandardScaler()
+df = heart.apply(lambda x: label_encoder.fit_transform(x) if x.dtype == 'O' else x)
+heartup = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
+cov_matrix = abs(heartup.cov())
+plt.figure(figsize=(10, 9))
+sns.heatmap(cov_matrix, annot=True, cmap='BrBG', fmt='.2f')
+plt.title('Covariance Matrix Heatmap')
+plt.show()
+
+# model training and normalization
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+std_scaler = StandardScaler()
+
+X = data_clean.iloc[:, : -1]
+y = data_clean.iloc[:, -1 :]
+
+X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = 0.2, random_state = 42)
+
+X_train = std_scaler.fit_transform(X_train)
+X_test = std_scaler.fit_transform(X_test)
+
+# import sklearn metrics library
+from sklearn.metrics import classification_report, accuracy_score, precision_recall_fscore_support, confusion_matrix
+
+# For calculating scoring of model prediction
+def evaluate_model(yt, yp):
+    results_pos = {}
+    results_pos['accuracy'] = accuracy_score(yt,yp)
+    precision, recall, fbeta,_ = precision_recall_fscore_support(yt, yp, average = 'weighted')
+    results_pos['precision'] = precision
+    results_pos['recall'] = recall
+    results_pos['f1score'] = fbeta
+    
+    #return results_pos
+    metrics = list(results_pos.keys())
+    values = list(results_pos.values())
+    
+    ax = sns.barplot(x=metrics, y=values, palette='BrBG')
+    plt.title('Model Evaluation Metrics')
+    plt.ylabel('Value')
+    plt.ylim(0, 1)  # Setting y-axis limit for better visualization
+    
+    for i, v in enumerate(values):
+        ax.text(i, v/2, f'{v:.2f}', ha='center', va='center', color='white', fontsize=12)
+    
+    plt.show()
+    
+# Classification report for model prediction
+def class_report(yt, yp):
+    class_report_df = pd.DataFrame(classification_report(yt, yp, output_dict= True)).transpose()
+    return class_report_df.style.background_gradient(cmap = 'BrBG',axis = 0)
+
+# Confusion Matrix for model prediction
+
+def conf_matrix(yt, yp):
+    cm = confusion_matrix(yt, yp)
+    sns.heatmap(cm, fmt='d', annot =  True, cmap = 'BrBG')
+    plt.xlabel('Predicted label')
+    plt.ylabel('Actual label')
+    plt.title('Confusion Matrix')
+    plt.show()
+
+SVM Algorithm
+from sklearn.svm import SVC
+svm  = SVC(C = 10, kernel = 'rbf', class_weight = 'balanced')
+svm.fit(X_train, y_train.values.ravel())
+y_pred = svm.predict(X_test)
+evaluate_model(y_test, y_pred)
+# Classification report
+class_report(y_test, y_pred)
+# Confusion Matrix
+conf_matrix(y_test, y_pred)
+
+#Decision Tree
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import GridSearchCV
+
+params_grid = {
+    'criterion': ['gini', 'entropy'],
+    'max_depth': [5, 10, 15, 20],
+    'min_samples_leaf': [1, 2, 5]
+}
+model = DecisionTreeClassifier(random_state=42)
+
+grid_search = GridSearchCV(estimator = model, 
+                        param_grid = params_grid, 
+                        scoring='f1',
+                        cv = 5, n_jobs = -1)
+grid_search.fit(X_train,y_train.values.ravel())
+best_params = grid_search.best_params_
+best_params
+dt = DecisionTreeClassifier(criterion='gini', max_depth=20, min_samples_leaf=1, random_state=42)
+dt.fit(X_train, y_train.values.ravel())
+y_pred = dt.predict(X_test)
+evaluate_model(y_test, y_pred)
+# Classification report
+class_report(y_test, y_pred)
+# Confusion Matrix
+conf_matrix(y_test, y_pred)
