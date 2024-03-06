@@ -1,0 +1,123 @@
+#set up
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import random
+import json
+import math
+
+#Part 1
+#variables idenfied 
+winnings = list(range(1,70))
+tickets_per_drawing = 1
+num_drawings = 1
+tickets_per_week = 7
+total_spent = 0
+earnings = 0
+#winning amount
+def calc_win_amt(my_choices, winning_numbers):
+    win_amt = 0 
+    final_numbers =len(my_choices["numbers"].intersection(winning_numbers["numbers"])) 
+    return win_amt
+ #drawings    
+for drawing in range (num_drawings):
+    winnings = random.sample(winnings, k=6)
+    winning_numbers ={"numbers" : winnings}
+    print("The 6 numbers from draw:", winnings)
+#tickets per draw 
+for ticket in range (tickets_per_drawing):
+    total_spent += 5
+    my_choices= random.sample(winnings, k=6)
+    
+    my_numbers = {"numbers" : my_choices}
+    print("My 6 numbers are:" , my_choices)
+
+#Part 2
+#variables identified 
+winning_odds = len(winning_numbers)
+ticket_per_week = 7
+weeks_per_year=52
+years = 80
+cost= 5
+#equations used to find values 
+total_tickets = (tickets_per_week* weeks_per_year) * years
+total_cost = total_tickets *cost
+odds = (total_tickets / winning_odds)
+#values printed
+print("Total tickets brought: " , total_tickets)
+print("Total Jennifer spent:$ ", total_cost)
+print(" Possible winnings: ", odds)
+print(" Chance of winning: ", odds*10,'%')
+
+#Part 3
+#Write a Python function that calculates the value of 
+#Nmin(epsilon) for epsilon = 10-5, 10-3, 0.1, and 0.5
+import sys
+ #epsilon value
+sys.float_info.epsilon
+print('epsilon value is:', sys.float_info.epsilon)
+
+#Nmin1 positve and negative
+Nmin1 = sys.float_info.epsilon + 1e-5 
+print("Nmin1 is:", Nmin1)
+Nmin1negative = sys.float_info.epsilon - 1e-3 
+print("Nmin1negative is:", Nmin1negative)
+
+#Nmin2 positve and negative
+Nmin2 = sys.float_info.epsilon + 1e-3
+print("Nmin2 is:", Nmin2)
+Nmin2egative = sys.float_info.epsilon - 1e-3
+print("Nmin2negative is:", Nmin2egative)
+
+#Nmin3 positve and negative
+Nmin3 = sys.float_info.epsilon + 0.1
+print("Nmin3 is:", Nmin3)
+Nmin3egative = sys.float_info.epsilon - 0.1
+print("Nmin3negative is:", Nmin3egative)
+
+#Nmin4 positve and negative
+Nmin4 = sys.float_info.epsilon + 0.5
+print("Nmin4 is:", Nmin4)
+Nmin4egative = sys.float_info.epsilon - 0.5
+print("Nmin4negative is:", Nmin4egative)
+
+#Part 4
+def countFriendsPairings(n):
+    dp = [0 for i in range(n+1)]
+    for  i in range (n+1):
+        if (i<= 2):
+            dp[i] =i
+        else:
+            dp[i] = dp [i-1] + (i - 1) * dp [i-2]
+    return dp[n]
+
+n=4
+print (countFriendsPairings(n))
+
+#Part 5
+for drawing in range (num_drawings):
+    winnings = random.sample(winnings, k=6)
+    print("The 6 numbers from draw:", winnings)
+
+for ticket in range (tickets_per_drawing):
+    total_spent += 5
+    my_choices= random.sample(winnings, k=3)
+    my_choices2= random.sample(winnings, k=2)
+    my_choices3= random.sample(winnings, k=1)
+    my_choices4= random.sample(winnings, k=5)
+    my_choices5= random.sample(winnings, k=4)
+    
+    my_numbers = {"numbers" : my_choices}
+    print("My 6 numbers are:" , my_choices)
+    print("My 6 numbers are:" , my_choices2)
+    print("My 6 numbers are:" , my_choices3)
+    print("My 6 numbers are:" , my_choices4)
+    print("My 6 numbers are:" , my_choices5)
+
+References:
+Schafer, C. [Corey Schafer]. (2023, January 9th. Python Tutorial: Simulate the Powerball 
+Lottery Using Python [Video]. YouTube. https://www.youtube.com/watch?v=HZ8uXq5VG2w
+
+GfG. (2022, December 12). Friends pairing problem. GeeksforGeeks. https://www.geeksforgeeks.org/friends-pairing-problem/ 
+
+
